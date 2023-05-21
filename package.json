@@ -21,8 +21,14 @@
   "homepage": "https://github.com/ZhaAbhi/SocialShare-Backend#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^5.5.0",
+    "mongoose": "^7.1.1",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "passport": "^0.6.0",
+    "passport-github2": "^0.1.12"
   }
 }
