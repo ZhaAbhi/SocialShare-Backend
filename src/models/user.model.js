@@ -1,17 +1,14 @@
 const users = require("./user.mongo");
 
-//findUser
-//Save user
-
-async function findUser(name) {
+async function findUserByName(name) {
   return await users.findOne({ name });
 }
 
-async function saveUser(user) {
+async function saveGithubLoginUser(user) {
   return await users.updateOne({ name: user.name }, user, { upsert: true });
 }
 
 module.exports = {
-  findUser,
-  saveUser,
+  findUserByName,
+  saveGithubLoginUser,
 };

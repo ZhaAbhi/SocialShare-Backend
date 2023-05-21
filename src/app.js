@@ -2,10 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const passport = require("passport");
-const userRouter = require("./routes/user.router");
-const { findUser, saveUser } = require("./models/user.model");
 const GitHubStrategy = require("passport-github2").Strategy;
 const jwt = require("jsonwebtoken");
+const { findUserByName, saveGithubLoginUser } = require("./models/user.model");
 const { authenticatedUser } = require("./middlewares/auth");
 require("dotenv").config();
 
@@ -23,16 +22,12 @@ passport.use(
       callbackURL: GITHUB_CALLBACK,
     },
     async function (accessToken, refreshToken, profile, done) {
-      //TODO
-      //1.extract the user information
       const name = profile.displayName;
       const id = profile.id;
-      //2. check the database if the user exists or not
-      const getUser = await findUser(name);
+      const getUser = await findUserByName(name);
       if (!getUser) {
-        await saveUser({ name });
+        await saveGithubLoginUser({ name });
       }
-      //3. issue the access token based on user information
       generatedToken = jwt.sign({ id, name }, JWT_SECRET);
       if (generatedToken !== null) {
         console.log(generatedToken);
