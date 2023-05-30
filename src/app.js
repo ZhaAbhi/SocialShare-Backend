@@ -6,7 +6,12 @@ const GitHubStrategy = require("passport-github2").Strategy;
 const jwt = require("jsonwebtoken");
 const { findUserByName, saveGithubLoginUser } = require("./models/user.model");
 const { authenticatedUser } = require("./middlewares/auth");
+const userRouter = require("./routes/user.router");
 require("dotenv").config();
+const users = require("./models/user.mongo");
+const fs = require("fs");
+const path = require("path");
+const { error } = require("console");
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -26,7 +31,7 @@ passport.use(
       const id = profile.id;
       const getUser = await findUserByName(name);
       if (!getUser) {
-        await saveGithubLoginUser({ name });
+        await saveGithubLoginUser({ name, githubId: id });
       }
       generatedToken = jwt.sign({ id, name }, JWT_SECRET);
       if (generatedToken !== null) {
@@ -59,10 +64,19 @@ app.get(
   }
 );
 
-app.get("/", authenticatedUser, (req, res) => {
+app.get("/", authenticatedUser, async (req, res) => {
   const user = req.user;
-  console.log("user", user);
-  return res.status(200).json(user);
+  const getUser = await users.findOne({ githubId: user.id }).select("-__v");
+  return res.status(200).json(getUser);
 });
+
+// app.get("/image", (req, res) => {
+//   fs.readFile("./uploads/baca55b76186b60483967e1ee8eb8acf", (err, data) => {
+//     res.setHeader("Content-Type", "image/jpeg");
+//     res.send(data);
+//   });
+// });
+
+app.use(userRouter);
 
 module.exports = app;
