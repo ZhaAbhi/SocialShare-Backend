@@ -8,6 +8,21 @@ async function findUser(query) {
   }
 }
 
+async function saveUser(userData) {
+  const { username, email, password } = userData;
+  try {
+    const createUser = await users.create({
+      username,
+      email,
+      password,
+    });
+    await createUser.save();
+  } catch (error) {
+    throw new Error("Could not save user to database");
+  }
+}
+
 module.exports = {
   findUser,
+  saveUser,
 };

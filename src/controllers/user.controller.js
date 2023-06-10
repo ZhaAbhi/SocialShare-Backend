@@ -1,4 +1,4 @@
-const { findUser } = require("../models/user.model");
+const { findUser, saveUser } = require("../models/user.model");
 const users = require("../models/user.mongo");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -19,12 +19,7 @@ async function httpRegister(req, res) {
   const hashPassword = await bcrypt.hash(password, 10);
   if (hashPassword) {
     try {
-      const newUser = await users.create({
-        username,
-        email,
-        password: hashPassword,
-      });
-      await newUser.save();
+      await saveUser({ username, email, password: hashPassword });
       return res.status(201).json({ message: "User registered successfully!" });
     } catch (error) {
       return res.status(500).json({ error: "Internal server error!" });
