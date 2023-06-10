@@ -1,3 +1,4 @@
+const { findUser } = require("../models/user.model");
 const users = require("../models/user.mongo");
 
 async function httpRegister(req, res) {
@@ -5,8 +6,8 @@ async function httpRegister(req, res) {
   if (!username || !email || !password) {
     return res.status(400).json({ error: "All fields are required!" });
   }
-  const getUserByEmail = await users.findOne({ email });
-  const getUserByUsername = await users.findOne({ username });
+  const getUserByEmail = await findUser({ email });
+  const getUserByUsername = await findUser({ username });
   if (getUserByEmail || getUserByUsername) {
     return res.status(400).json({ error: "User already exists!" });
   }
