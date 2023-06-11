@@ -62,9 +62,23 @@ async function httpGetPostById(req, res) {
   }
 }
 
-// async function httpGetPostsByUserId(req, res) {
-
-// }
+async function httpGetPostByUserId(req, res) {
+  const { userId } = req.user;
+  if (!userId) {
+    return res.status(400).json({ error: "Could not found user!" });
+  }
+  try {
+    const getPost = await posts
+      .find({ postedBy: { _id: userId } })
+      .populate("postedBy");
+    if (!getPost) {
+      return res.status(400).json({ error: "Post not found!" });
+    }
+    return res.status(200).json(getPost);
+  } catch (error) {
+    return res.status(500).jsone({ error: "Internal server error!" });
+  }
+}
 
 // async function httpDeletePost(req, res) {}
 
@@ -72,4 +86,5 @@ module.exports = {
   httpCreatePost,
   httpGetAllPosts,
   httpGetPostById,
+  httpGetPostByUserId,
 };
