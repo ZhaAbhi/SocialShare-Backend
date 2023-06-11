@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const userRouter = require("./controllers/user.router");
+const userRouter = require("./controllers/user/user.router");
 
 const app = express();
 app.use(express.json());

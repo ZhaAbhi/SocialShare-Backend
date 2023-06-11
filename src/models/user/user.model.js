@@ -1,4 +1,4 @@
-const users = require("../models/user.mongo");
+const users = require("./user.mongo");
 
 async function findUser(query) {
   try {

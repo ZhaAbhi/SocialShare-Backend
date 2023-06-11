@@ -1,4 +1,4 @@
-const { findUser, saveUser } = require("../models/user.model");
+const { findUser, saveUser } = require("../../models/user/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
