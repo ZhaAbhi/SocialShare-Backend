@@ -52,7 +52,22 @@ async function httpLogin(req, res) {
   }
 }
 
+async function httpHome(req, res) {
+  const { userId } = req.user;
+  try {
+    const getUser = await findUser({ _id: userId });
+    if (!getUser) {
+      return res.status(400).json({ error: "Could not found user!" });
+    }
+    getUser.password = null;
+    return res.status(200).json({ user: getUser });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error!" });
+  }
+}
+
 module.exports = {
   httpRegister,
   httpLogin,
+  httpHome,
 };
