@@ -95,7 +95,7 @@ async function httpDeletePost(req, res) {
       postedBy: { _id: userId },
     });
     if (!getPost) {
-      return res.status(400).json({ error: "Could not found post!" });
+      return res.status(400).json({ error: "Not Authorized to delete!" });
     }
     return res.status(200).json(getPost);
   } catch (error) {
