@@ -5,7 +5,6 @@ const {
   findPostByUserId,
   deletePost,
 } = require("../../models/post/post.model");
-const posts = require("../../models/post/post.mongo");
 const { findUser } = require("../../models/user/user.model");
 
 async function checkUserId(userId) {
