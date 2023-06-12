@@ -1,4 +1,8 @@
-const { findAllPost, savePost } = require("../../models/post/post.model");
+const {
+  findAllPost,
+  savePost,
+  findPostById,
+} = require("../../models/post/post.model");
 const posts = require("../../models/post/post.mongo");
 const { findUser } = require("../../models/user/user.model");
 
@@ -45,7 +49,7 @@ async function httpGetPostById(req, res) {
     return res.status(400).json({ error: "Could not found post!" });
   }
   try {
-    const getPost = await posts.findById({ _id: postId }).populate("postedBy");
+    const getPost = await findPostById({ _id: postId });
     if (!getPost) {
       return res.status(400).json({ error: "Could not found post!" });
     }

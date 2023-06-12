@@ -24,7 +24,17 @@ async function findAllPost() {
   }
 }
 
+async function findPostById(query) {
+  try {
+    const getPostById = await posts.findById(query).populate("postedBy");
+    return getPostById;
+  } catch (error) {
+    throw new Error("Internal server error");
+  }
+}
+
 module.exports = {
   savePost,
   findAllPost,
+  findPostById,
 };
