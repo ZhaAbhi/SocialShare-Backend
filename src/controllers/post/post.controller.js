@@ -76,7 +76,7 @@ async function httpGetPostByUserId(req, res) {
     }
     return res.status(200).json(getPost);
   } catch (error) {
-    return res.status(500).jsone({ error: "Internal server error!" });
+    return res.status(500).json({ error: "Internal server error!" });
   }
 }
 
