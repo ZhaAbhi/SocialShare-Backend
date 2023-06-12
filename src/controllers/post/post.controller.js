@@ -80,11 +80,33 @@ async function httpGetPostByUserId(req, res) {
   }
 }
 
-// async function httpDeletePost(req, res) {}
+async function httpDeletePost(req, res) {
+  const { userId } = req.user;
+  const { postId } = req.params;
+  if (!userId) {
+    return res.status(400).json({ error: "Could not found user!" });
+  }
+  if (!postId) {
+    return res.status(400).json({ error: "Could not found post!" });
+  }
+  try {
+    const getPost = await posts.findOneAndDelete({
+      _id: postId,
+      postedBy: { _id: userId },
+    });
+    if (!getPost) {
+      return res.status(400).json({ error: "Could not found post!" });
+    }
+    return res.status(200).json(getPost);
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error!" });
+  }
+}
 
 module.exports = {
   httpCreatePost,
   httpGetAllPosts,
   httpGetPostById,
   httpGetPostByUserId,
+  httpDeletePost,
 };
