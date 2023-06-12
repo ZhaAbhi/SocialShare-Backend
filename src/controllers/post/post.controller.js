@@ -1,3 +1,4 @@
+const { findAllPost } = require("../../models/post/post.model");
 const posts = require("../../models/post/post.mongo");
 const { findUser } = require("../../models/user/user.model");
 
@@ -33,10 +34,7 @@ async function httpCreatePost(req, res) {
 async function httpGetAllPosts(req, res) {
   await checkUserId(req.user.userId);
   try {
-    const getAllPost = await posts
-      .find({})
-      .populate("postedBy")
-      .select("-password");
+    const getAllPost = await findAllPost();
     return res.status(200).json({ posts: getAllPost });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error!" });
