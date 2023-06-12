@@ -1,12 +1,16 @@
 const posts = require("../../models/post/post.mongo");
 const { findUser } = require("../../models/user/user.model");
 
-async function httpCreatePost(req, res) {
-  const { userId } = req.user;
-  const { content } = req.body;
+async function checkUserId(userId) {
   if (!userId) {
     return res.status(400).json({ error: "Could not found user!" });
   }
+  return userId;
+}
+
+async function httpCreatePost(req, res) {
+  const userId = await checkUserId(req.user.userId);
+  const { content } = req.body;
   if (!content) {
     return res.status(400).json({ error: "Content is required!" });
   }
@@ -27,10 +31,7 @@ async function httpCreatePost(req, res) {
 }
 
 async function httpGetAllPosts(req, res) {
-  const { userId } = req.user;
-  if (!userId) {
-    return res.status(400).json({ error: "Could not found user!" });
-  }
+  await checkUserId(req.user.userId);
   try {
     const getAllPost = await posts
       .find({})
@@ -43,11 +44,9 @@ async function httpGetAllPosts(req, res) {
 }
 
 async function httpGetPostById(req, res) {
-  const { userId } = req.user;
+  await checkUserId(req.user.userId);
   const { postId } = req.params;
-  if (!userId) {
-    return res.status(400).json({ error: "Could not found user!" });
-  }
+
   if (!postId) {
     return res.status(400).json({ error: "Could not found post!" });
   }
@@ -63,10 +62,7 @@ async function httpGetPostById(req, res) {
 }
 
 async function httpGetPostByUserId(req, res) {
-  const { userId } = req.user;
-  if (!userId) {
-    return res.status(400).json({ error: "Could not found user!" });
-  }
+  const userId = await checkUserId(req.user.userId);
   try {
     const getPost = await posts
       .find({ postedBy: { _id: userId } })
@@ -81,11 +77,9 @@ async function httpGetPostByUserId(req, res) {
 }
 
 async function httpDeletePost(req, res) {
-  const { userId } = req.user;
+  const userId = await checkUserId(req.user.userId);
   const { postId } = req.params;
-  if (!userId) {
-    return res.status(400).json({ error: "Could not found user!" });
-  }
+
   if (!postId) {
     return res.status(400).json({ error: "Could not found post!" });
   }
