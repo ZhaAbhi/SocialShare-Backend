@@ -3,6 +3,7 @@ const {
   savePost,
   findPostById,
   findPostByUserId,
+  deletePost,
 } = require("../../models/post/post.model");
 const posts = require("../../models/post/post.mongo");
 const { findUser } = require("../../models/user/user.model");
@@ -81,7 +82,7 @@ async function httpDeletePost(req, res) {
     return res.status(400).json({ error: "Could not found post!" });
   }
   try {
-    const getPost = await posts.findOneAndDelete({
+    const getPost = await deletePost({
       _id: postId,
       postedBy: { _id: userId },
     });

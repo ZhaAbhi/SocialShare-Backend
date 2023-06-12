@@ -33,20 +33,28 @@ async function findPostById(query) {
   }
 }
 
-async function findPostByUserId(query){
-    try {
-       const getPostByUserId = await posts
-      .find(query)
-      .populate("postedBy");
-      return getPostByUserId
-    } catch (error) {
-        throw new Error("Internal server error");
-    }
+async function findPostByUserId(query) {
+  try {
+    const getPostByUserId = await posts.find(query).populate("postedBy");
+    return getPostByUserId;
+  } catch (error) {
+    throw new Error("Internal server error");
+  }
+}
+
+async function deletePost(query) {
+  try {
+    const deletedPost = await posts.findOneAndDelete(query);
+    return deletedPost;
+  } catch (error) {
+    throw new Error("Internal server error");
+  }
 }
 
 module.exports = {
   savePost,
   findAllPost,
   findPostById,
-  findPostByUserId
+  findPostByUserId,
+  deletePost,
 };
