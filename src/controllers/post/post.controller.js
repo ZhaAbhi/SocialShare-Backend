@@ -1,4 +1,4 @@
-const { findAllPost } = require("../../models/post/post.model");
+const { findAllPost, savePost } = require("../../models/post/post.model");
 const posts = require("../../models/post/post.mongo");
 const { findUser } = require("../../models/user/user.model");
 
@@ -20,11 +20,7 @@ async function httpCreatePost(req, res) {
     if (!getUser) {
       return res.status(400).json({ error: "Could not found user!" });
     }
-    const createPost = await posts.create({
-      content,
-      postedBy: userId,
-    });
-    await createPost.save();
+    const createPost = await savePost({ content: content, postedBy: userId });
     return res.status(201).json({ post: createPost });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error!" });

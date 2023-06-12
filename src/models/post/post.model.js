@@ -1,5 +1,17 @@
 const posts = require("./post.mongo");
 
+async function savePost({ content, postedBy }) {
+  try {
+    const createPost = await posts.create({
+      content,
+      postedBy,
+    });
+    return await createPost.save();
+  } catch (error) {
+    throw new Error("Internal server error");
+  }
+}
+
 async function findAllPost() {
   try {
     const getAllPosts = await posts
@@ -13,5 +25,6 @@ async function findAllPost() {
 }
 
 module.exports = {
+  savePost,
   findAllPost,
 };
