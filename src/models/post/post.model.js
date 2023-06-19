@@ -14,10 +14,7 @@ async function savePost({ content, postedBy }) {
 
 async function findAllPost() {
   try {
-    const getAllPosts = await posts
-      .find({})
-      .populate("postedBy")
-      .select("-password");
+    const getAllPosts = await posts.find().populate("postedBy", "-password");
     return getAllPosts;
   } catch (error) {
     throw new Error("Internal server error");

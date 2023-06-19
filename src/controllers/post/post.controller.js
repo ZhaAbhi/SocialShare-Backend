@@ -7,6 +7,7 @@ const {
 } = require("../../models/post/post.model");
 const { findUser } = require("../../models/user/user.model");
 
+
 async function checkUserId(userId) {
   if (!userId) {
     return res.status(400).json({ error: "Could not found user!" });

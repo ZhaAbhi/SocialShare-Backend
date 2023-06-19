@@ -7,13 +7,19 @@ const {
   httpGetPostByUserId,
   httpDeletePost,
 } = require("./post.controller");
+const upload = require("../../middlewares/uploadImage");
 
 const postRouter = express.Router();
 
-postRouter.post("/post/create", auth, httpCreatePost);
+postRouter.post(
+  "/post/create",
+  auth,
+  upload.single("PostImage"),
+  httpCreatePost
+);
 postRouter.get("/post/retrieve/all", auth, httpGetAllPosts);
 postRouter.get("/post/retrieve/:postId", auth, httpGetPostById);
 postRouter.get("/post/user/retrieve", auth, httpGetPostByUserId);
-postRouter.get("/post/delete/:postId", auth, httpDeletePost);
+postRouter.delete("/post/delete/:postId", auth, httpDeletePost);
 
 module.exports = postRouter;
