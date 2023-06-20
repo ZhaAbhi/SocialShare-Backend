@@ -7,7 +7,6 @@ const {
 } = require("../../models/post/post.model");
 const { findUser } = require("../../models/user/user.model");
 
-
 async function checkUserId(userId) {
   if (!userId) {
     return res.status(400).json({ error: "Could not found user!" });
@@ -18,7 +17,11 @@ async function checkUserId(userId) {
 async function httpCreatePost(req, res) {
   const userId = await checkUserId(req.user.userId);
   const { content } = req.body;
-  if (!content) {
+  let originalname = null;
+  if (req.file) {
+    originalname = req.file.originalname;
+  }
+  if (!content && !originalname) {
     return res.status(400).json({ error: "Content is required!" });
   }
   try {
@@ -26,7 +29,11 @@ async function httpCreatePost(req, res) {
     if (!getUser) {
       return res.status(400).json({ error: "Could not found user!" });
     }
-    const createPost = await savePost({ content: content, postedBy: userId });
+    const createPost = await savePost({
+      content: content,
+      postImage: originalname,
+      postedBy: userId,
+    });
     return res.status(201).json({ post: createPost });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error!" });

@@ -1,9 +1,10 @@
 const posts = require("./post.mongo");
 
-async function savePost({ content, postedBy }) {
+async function savePost({ content, postImage, postedBy }) {
   try {
     const createPost = await posts.create({
       content,
+      postImage,
       postedBy,
     });
     return await createPost.save();
