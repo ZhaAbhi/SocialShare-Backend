@@ -6,6 +6,7 @@ const {
   deletePost,
 } = require("../../models/post/post.model");
 const { findUser } = require("../../models/user/user.model");
+const posts = require("../../models/post/post.mongo");
 
 async function checkUserId(userId) {
   if (!userId) {
@@ -102,10 +103,34 @@ async function httpDeletePost(req, res) {
   }
 }
 
+async function httpLikePost(req, res) {
+  const userId = await checkUserId(req.user.userId);
+  const { postId } = req.params;
+  const getPost = await findPostById({ _id: postId });
+  if (!getPost) {
+    return res.status(400).json({ error: "Could not found post!" });
+  }
+  const isLiked = getPost?.likes?.includes(userId);
+  const option = isLiked ? "$pull" : "$addToSet";
+  console.log("isLiked", isLiked);
+  console.log("options", option);
+  try {
+    const updatedPost = await posts.findByIdAndUpdate(
+      { _id: postId },
+      { [option]: { likes: userId } },
+      { new: true }
+    );
+    return res.status(201).json(updatedPost.likes);
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error!" });
+  }
+}
+
 module.exports = {
   httpCreatePost,
   httpGetAllPosts,
   httpGetPostById,
   httpGetPostByUserId,
   httpDeletePost,
+  httpLikePost,
 };

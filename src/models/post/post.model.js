@@ -15,7 +15,10 @@ async function savePost({ content, postImage, postedBy }) {
 
 async function findAllPost() {
   try {
-    const getAllPosts = await posts.find().populate("postedBy", "-password");
+    const getAllPosts = await posts
+      .find()
+      .populate("postedBy", "-password")
+      .sort({ createdAt: -1 });
     return getAllPosts;
   } catch (error) {
     throw new Error("Internal server error");
@@ -24,7 +27,9 @@ async function findAllPost() {
 
 async function findPostById(query) {
   try {
-    const getPostById = await posts.findById(query).populate("postedBy");
+    const getPostById = await posts
+      .findById(query)
+      .populate("postedBy", "-password");
     return getPostById;
   } catch (error) {
     throw new Error("Internal server error");
