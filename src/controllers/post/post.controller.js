@@ -112,8 +112,6 @@ async function httpLikePost(req, res) {
   }
   const isLiked = getPost?.likes?.includes(userId);
   const option = isLiked ? "$pull" : "$addToSet";
-  console.log("isLiked", isLiked);
-  console.log("options", option);
   try {
     const updatedPost = await posts.findByIdAndUpdate(
       { _id: postId },
@@ -126,6 +124,32 @@ async function httpLikePost(req, res) {
   }
 }
 
+async function httpComment(req, res) {
+  const userId = await checkUserId(req.user.userId);
+  const { postId } = req.params;
+  const { comment } = req.body;
+  const getPost = await findPostById({ _id: postId });
+  if (!getPost) {
+    return res.status(400).json({ error: "Could not found post!" });
+  }
+  if (!comment) {
+    return res.status(400).json({ error: "Comment should not be empty!" });
+  }
+  try {
+    const commentedPost = await posts
+      .findByIdAndUpdate(
+        { _id: postId },
+        { $addToSet: { commentsBy: { comment: comment, user: userId } } },
+        { new: true }
+      )
+      .populate("commentsBy.user", "-password");
+    return res.status(201).json(commentedPost);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal server error!" });
+  }
+}
+
 module.exports = {
   httpCreatePost,
   httpGetAllPosts,
@@ -133,4 +157,5 @@ module.exports = {
   httpGetPostByUserId,
   httpDeletePost,
   httpLikePost,
+  httpComment,
 };
