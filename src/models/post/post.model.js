@@ -29,7 +29,8 @@ async function findPostById(query) {
   try {
     const getPostById = await posts
       .findById(query)
-      .populate("postedBy", "-password");
+      .populate("postedBy", "-password")
+      .populate("commentsBy.user", "-password");
     return getPostById;
   } catch (error) {
     throw new Error("Internal server error");
