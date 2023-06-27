@@ -150,6 +150,20 @@ async function httpComment(req, res) {
   }
 }
 
+async function httpGetAllComments(req, res) {
+  const { postId } = req.params;
+  const getPosts = await posts.findById({ _id: postId });
+  if (!getPosts) {
+    return res.status(400).json({ error: "Could not found post!" });
+  }
+  try {
+    const allComments = await getPosts.populate("commentsBy.user", "-password");
+    return res.status(200).json(allComments);
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 module.exports = {
   httpCreatePost,
   httpGetAllPosts,
@@ -158,4 +172,5 @@ module.exports = {
   httpDeletePost,
   httpLikePost,
   httpComment,
+  httpGetAllComments,
 };

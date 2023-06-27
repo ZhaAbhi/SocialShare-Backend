@@ -8,6 +8,7 @@ const {
   httpDeletePost,
   httpLikePost,
   httpComment,
+  httpGetAllComments,
 } = require("./post.controller");
 const upload = require("../../middlewares/uploadImage");
 
@@ -25,5 +26,6 @@ postRouter.get("/post/user/retrieve", auth, httpGetPostByUserId);
 postRouter.delete("/post/delete/:postId", auth, httpDeletePost);
 postRouter.put("/post/like/:postId", auth, httpLikePost);
 postRouter.post("/post/comment/:postId", auth, httpComment);
+postRouter.get("/post/allcomments/:postId", httpGetAllComments);
 
 module.exports = postRouter;
