@@ -4,11 +4,25 @@ const users = require("../../models/user/user.mongo");
 async function httpRegisterUser(req, res) {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
-    return res.status(400).json({ message: "All fields are required!" });
+    return res.status(400).json({ error: "All fields are required!" });
   }
-  //1. checking if the username and email is already taken or not
-  //2. hashing the password
-  //3. saving the user to database
+  const existsUserWithEmail = await users.findOne({ email });
+  const existsUserWithUsername = await users.findOne({ username });
+  if (existsUserWithEmail) {
+    return res.status(400).json({ error: "User with email already exists!" });
+  }
+  if (existsUserWithUsername) {
+    return res
+      .status(400)
+      .json({ error: "User with username already exists!" });
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await users.create({
+    username,
+    email,
+    password: hashedPassword,
+  });
+  return res.status(201).json({ message: "User created successfully" });
 }
 
 module.exports = {
