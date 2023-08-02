@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const users = require("../../models/user/user.mongo");
+const { queryUser, saveUser } = require("../../models/user/user.model");
 require("dotenv").config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -10,8 +11,8 @@ async function httpRegisterUser(req, res) {
   if (!username || !email || !password) {
     return res.status(400).json({ error: "All fields are required!" });
   }
-  const existsUserWithEmail = await users.findOne({ email });
-  const existsUserWithUsername = await users.findOne({ username });
+  const existsUserWithEmail = await queryUser({ email });
+  const existsUserWithUsername = await queryUser({ username });
   if (existsUserWithEmail) {
     return res.status(400).json({ error: "User with email already exists!" });
   }
@@ -21,7 +22,7 @@ async function httpRegisterUser(req, res) {
       .json({ error: "User with username already exists!" });
   }
   const hashedPassword = await bcrypt.hash(password, 10);
-  await users.create({
+  await saveUser({
     username,
     email,
     password: hashedPassword,
@@ -34,7 +35,7 @@ async function httpLoginUser(req, res) {
   if (!email || !password) {
     return res.status(400).json({ error: "All fields are required!" });
   }
-  const existsUserWithEmail = await users.findOne({ email });
+  const existsUserWithEmail = await queryUser({ email });
   if (!existsUserWithEmail) {
     return res.status(400).json({ error: "User with email doesnot exists!" });
   }
