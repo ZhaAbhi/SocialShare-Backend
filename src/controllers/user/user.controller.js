@@ -54,13 +54,13 @@ async function httpLoginUser(req, res) {
   }
 }
 
-async function dashboard(req, res) {
-  console.log(req.user);
-  return res.status(200).json(req.user);
+async function httpGetUser(req, res) {
+  const user = req.user;
+  return res.status(200).json({ user: user });
 }
 
 module.exports = {
   httpRegisterUser,
   httpLoginUser,
-  dashboard,
+  httpGetUser,
 };
