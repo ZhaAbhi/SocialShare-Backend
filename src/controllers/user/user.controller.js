@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const users = require("../../models/user/user.mongo");
+require("dotenv").config();
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function httpRegisterUser(req, res) {
   const { username, email, password } = req.body;
@@ -45,19 +48,19 @@ async function httpLoginUser(req, res) {
     username: existsUserWithEmail.username,
     email: existsUserWithEmail.email,
   };
-  const token = jwt.sign(payload, "shhhhh");
+  const token = jwt.sign(payload, JWT_SECRET);
   if (token) {
     return res.status(201).json({ AccessToken: token });
   }
 }
 
-async function dashboard(req, res){
-  console.log(req.user)
-  return res.status(200).json(req.user)
+async function dashboard(req, res) {
+  console.log(req.user);
+  return res.status(200).json(req.user);
 }
 
 module.exports = {
   httpRegisterUser,
   httpLoginUser,
-  dashboard
+  dashboard,
 };
