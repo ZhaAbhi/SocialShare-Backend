@@ -22,6 +22,20 @@ async function httpCreatePost(req, res) {
   return res.status(201).json({ message: "Post created successfully!" });
 }
 
+async function httpGetAllPost(req, res) {
+  const allPosts = await posts
+    .find({})
+    .populate("postedBy", "-password -posts");
+  return res.status(200).json(allPosts);
+}
+
+// async function httpGetPostById(req,res){}
+// async function httpRemovePost(req,res){}
+// async function httpAddComment(req,res){}
+// async function httpRemoveComment(req,res){}
+//async function httpLikePost(req,res){}
+
 module.exports = {
   httpCreatePost,
+  httpGetAllPost,
 };
