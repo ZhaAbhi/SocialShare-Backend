@@ -39,7 +39,15 @@ async function httpGetPostById(req, res) {
   }
   return res.status(200).json({ post });
 }
-//async function httpGetUserPost(req,res){}
+
+async function httpGetMyPost(req, res) {
+  const { id } = req.user;
+  const myPost = await users
+    .findById({ _id: id })
+    .populate("posts", "-postedBy")
+    .select("-password");
+  return res.status(200).json({ myPost });
+}
 // async function httpRemovePost(req,res){}
 // async function httpAddComment(req,res){}
 // async function httpRemoveComment(req,res){}
@@ -49,4 +57,5 @@ module.exports = {
   httpCreatePost,
   httpGetAllPost,
   httpGetPostById,
+  httpGetMyPost,
 };
