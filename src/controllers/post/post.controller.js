@@ -88,7 +88,6 @@ async function httpGetPostComments(req, res) {
   );
   return res.status(200).json(allComments);
 }
-//async function httpLikePost(req,res){}
 
 module.exports = {
   httpCreatePost,
