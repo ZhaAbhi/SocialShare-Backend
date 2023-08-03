@@ -29,7 +29,17 @@ async function httpGetAllPost(req, res) {
   return res.status(200).json(allPosts);
 }
 
-// async function httpGetPostById(req,res){}
+async function httpGetPostById(req, res) {
+  const { postId } = req.params;
+  const post = await posts
+    .findById({ _id: postId })
+    .populate("postedBy", "-password -posts");
+  if (!post) {
+    return res.status(400).json({ error: "No post found!" });
+  }
+  return res.status(200).json({ post });
+}
+//async function httpGetUserPost(req,res){}
 // async function httpRemovePost(req,res){}
 // async function httpAddComment(req,res){}
 // async function httpRemoveComment(req,res){}
@@ -38,4 +48,5 @@ async function httpGetAllPost(req, res) {
 module.exports = {
   httpCreatePost,
   httpGetAllPost,
+  httpGetPostById,
 };
