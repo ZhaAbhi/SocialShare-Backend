@@ -3,7 +3,6 @@ const users = require("../../models/user/user.mongo");
 
 async function httpCreatePost(req, res) {
   const { id } = req.user;
-  console.log(id);
   const { content, uploadedImage } = req.body;
   if (!content && !uploadedImage) {
     return res.status(400).json({ error: "Post cannot be created!" });
