@@ -6,6 +6,7 @@ const {
   httpGetMyPost,
   httpRemovePost,
   httpAddComment,
+  httpGetPostComments,
 } = require("./post.controller");
 const { auth } = require("../../middlewares/auth");
 
@@ -17,5 +18,6 @@ postRouter.get("/post/:postId", auth, httpGetPostById);
 postRouter.get("/mypost", auth, httpGetMyPost);
 postRouter.delete("/post/remove/:postId", auth, httpRemovePost);
 postRouter.post("/post/comment/:postId", auth, httpAddComment);
+postRouter.get("/post/comments/:postId", auth, httpGetPostComments);
 
 module.exports = postRouter;

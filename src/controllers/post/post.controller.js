@@ -74,8 +74,20 @@ async function httpAddComment(req, res) {
   await existPost.save();
   return res.status(201).json({ message: "Comment posted successfully!" });
 }
-//async function httpGetPostComments(req,res){}
-// async function httpRemoveComment(req,res){}
+
+async function httpGetPostComments(req, res) {
+  const { postId } = req.params;
+  const post = await posts.findById({ _id: postId });
+  if (!post) {
+    return res.status(400).json({ error: "No post found!" });
+  }
+
+  const allComments = await post.populate(
+    "comments comments.commentsBy",
+    "-password -posts"
+  );
+  return res.status(200).json(allComments);
+}
 //async function httpLikePost(req,res){}
 
 module.exports = {
@@ -85,4 +97,5 @@ module.exports = {
   httpGetMyPost,
   httpRemovePost,
   httpAddComment,
+  httpGetPostComments,
 };
