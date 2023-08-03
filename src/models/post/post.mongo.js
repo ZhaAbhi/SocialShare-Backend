@@ -12,6 +12,14 @@ const postSchema = new mongoose.Schema(
       ref: "User",
       type: mongoose.SchemaTypes.ObjectId,
     },
+    comments: [
+      {
+        commentContent: {
+          type: String,
+        },
+        commentsBy: { ref: "User", type: mongoose.SchemaTypes.ObjectId },
+      },
+    ],
   },
   { timestamps: true }
 );

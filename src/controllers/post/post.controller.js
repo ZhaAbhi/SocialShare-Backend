@@ -51,7 +51,6 @@ async function httpGetMyPost(req, res) {
 async function httpRemovePost(req, res) {
   const { id } = req.user;
   const { postId } = req.params;
-  //Checking if the user has the postId in posts array or not
   const existsPostId = await users.findOne({ _id: id, posts: { _id: postId } });
   if (!existsPostId) {
     return res.status(400).json({ error: "No posts" });
@@ -59,7 +58,23 @@ async function httpRemovePost(req, res) {
   await posts.findByIdAndRemove({ _id: postId });
   return res.status(200).json({ message: "Post removed successfully!" });
 }
-// async function httpAddComment(req,res){}
+
+async function httpAddComment(req, res) {
+  const { id } = req.user;
+  const { postId } = req.params;
+  const { comment } = req.body;
+  if (!comment) {
+    return res.status(400).json({ error: "No comment to post!" });
+  }
+  const existPost = await posts.findById({ _id: postId });
+  if (!existPost) {
+    return res.status(400).json({ error: "No post found!" });
+  }
+  existPost.comments.push({ commentContent: comment, commentsBy: id });
+  await existPost.save();
+  return res.status(201).json({ message: "Comment posted successfully!" });
+}
+//async function httpGetPostComments(req,res){}
 // async function httpRemoveComment(req,res){}
 //async function httpLikePost(req,res){}
 
@@ -69,4 +84,5 @@ module.exports = {
   httpGetPostById,
   httpGetMyPost,
   httpRemovePost,
+  httpAddComment,
 };
