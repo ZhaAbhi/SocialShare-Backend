@@ -8,9 +8,7 @@ const server = http.createServer(app);
 async function startServer() {
   await connectMongo();
   server.listen(PORT, () => {
-    console.log(`Listening on PORT ${PORT}`);
+    console.log(`Server listening on PORT ${PORT}`);
   });
 }
-
 startServer();
-
