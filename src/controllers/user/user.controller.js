@@ -1,18 +1,25 @@
 const bcrypt = require("bcrypt");
 const { queryUser, saveUser } = require("../../models/user/user.model");
 
+function sendError(res, statusCode, errorMessage) {
+  return res.status(statusCode).json({ error: errorMessage });
+}
+
+function sendSuccess(res, statusCode, successMessage) {
+  return res.status(statusCode).json(successMessage);
+}
 async function httpRegister(req, res) {
   const { username, email, password } = req.body;
   if (!email || !password || !username) {
     return res.status(400).json({ error: "All fields are required!" });
   }
   const userWithEmail = await queryUser({ email });
-  const userWithUsername = await queryUser({ username });
   if (userWithEmail) {
-    return res.status(400).json({ error: "Email address already exists!" });
+    return sendError(res, 400, "Email address already exists!");
   }
+  const userWithUsername = await queryUser({ username });
   if (userWithUsername) {
-    return res.status(400).json({ error: "Username already exists!" });
+    return sendError(res, 400, "Username already exists!");
   }
   const hashPassword = await bcrypt.hash(password, 10);
   await saveUser({
@@ -20,7 +27,7 @@ async function httpRegister(req, res) {
     email,
     password: hashPassword,
   });
-  return res.status(201).json({ success: "User registered successfully!" });
+  return sendSuccess(res, 201, { success: "User registered successfully!" });
 }
 
 module.exports = {
