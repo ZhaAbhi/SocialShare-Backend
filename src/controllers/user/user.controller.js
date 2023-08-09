@@ -1,17 +1,11 @@
 const bcrypt = require("bcrypt");
 const { queryUser, saveUser } = require("../../models/user/user.model");
+const { sendError, sendSuccess } = require("../../services/responseHandler");
 
-function sendError(res, statusCode, errorMessage) {
-  return res.status(statusCode).json({ error: errorMessage });
-}
-
-function sendSuccess(res, statusCode, successMessage) {
-  return res.status(statusCode).json(successMessage);
-}
 async function httpRegister(req, res) {
   const { username, email, password } = req.body;
   if (!email || !password || !username) {
-    return res.status(400).json({ error: "All fields are required!" });
+    return sendError(res, 400, "All fields are required!");
   }
   const userWithEmail = await queryUser({ email });
   if (userWithEmail) {
