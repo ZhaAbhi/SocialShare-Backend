@@ -1,6 +1,10 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { queryUser, saveUser } = require("../../models/user/user.model");
 const { sendError, sendSuccess } = require("../../services/responseHandler");
+require("dotenv").config();
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function httpRegister(req, res) {
   const { username, email, password } = req.body;
@@ -24,6 +28,37 @@ async function httpRegister(req, res) {
   return sendSuccess(res, 201, { success: "User registered successfully!" });
 }
 
+async function httpLogin(req, res) {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return sendError(res, 400, "All fields are required!");
+  }
+  const user = await queryUser({ email });
+  if (!user) {
+    return sendError(res, 400, "User with email does not exists!");
+  }
+  const comparePasswordHash = bcrypt.compare(password, user.password);
+  if (!comparePasswordHash) {
+    return sendError(res, 400, "Password did not matched!");
+  }
+  const payload = {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+  };
+  const token = jwt.sign(payload, JWT_SECRET);
+  if (token) {
+    return sendSuccess(res, 201, { accessToken: token });
+  }
+}
+
+async function httpHome(req, res) {
+  const user = req.user;
+  return sendSuccess(res, 200, user);
+}
+
 module.exports = {
   httpRegister,
+  httpLogin,
+  httpHome,
 };
