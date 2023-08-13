@@ -6,6 +6,11 @@ require("dotenv").config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+async function httpHome(req, res) {
+  const user = req.user;
+  return sendSuccess(res, 200, user);
+}
+
 async function httpRegister(req, res) {
   const { username, email, password } = req.body;
   if (!email || !password || !username) {
@@ -50,11 +55,6 @@ async function httpLogin(req, res) {
   if (token) {
     return sendSuccess(res, 201, { accessToken: token });
   }
-}
-
-async function httpHome(req, res) {
-  const user = req.user;
-  return sendSuccess(res, 200, user);
 }
 
 module.exports = {

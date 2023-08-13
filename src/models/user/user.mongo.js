@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
     },
+    posts: [{ ref: "Post", type: mongoose.SchemaTypes.ObjectId }],
+    likes: [{ ref: "Post", type: mongoose.SchemaTypes.ObjectId }],
   },
   { timestamps: true }
 );
