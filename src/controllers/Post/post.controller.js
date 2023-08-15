@@ -38,7 +38,47 @@ async function httpGetAllPosts(req, res) {
   return res.status(200).json(getposts);
 }
 
+async function httpGetPost(req, res) {
+  const { id } = req.user;
+  const { postId } = req.params;
+  const existsUser = await users.findById({ _id: id });
+  if (!existsUser) {
+    return res.status(400).json({ error: "User does not exists!" });
+  }
+
+  const getPost = await posts
+    .findById({ _id: postId })
+    .populate("postedBy", "-password -posts -__v");
+  if (!getPost) {
+    return res.status(400).json({ error: "Could not found post!" });
+  }
+  return res.status(200).json(getPost);
+}
+
+async function httpLikePost(req, res) {
+  const { id } = req.user;
+  const { postId } = req.params;
+  const getUser = await users.findById({ _id: id });
+  const isLiked = getUser?.likes.includes(postId);
+  const option = isLiked ? "$pull" : "$addToSet";
+  const updatedPost = await posts.findByIdAndUpdate(
+    { _id: postId },
+    { [option]: { likes: id } },
+    { new: true }
+  );
+  const updatedUser = await users.findByIdAndUpdate(
+    { _id: id },
+    { [option]: { likes: postId } },
+    { new: true }
+  );
+  await updatedPost.save();
+  await updatedUser.save();
+  console.log(updatedPost);
+}
+
 module.exports = {
   httpPostContent,
   httpGetAllPosts,
+  httpGetPost,
+  httpLikePost,
 };

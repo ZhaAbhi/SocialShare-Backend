@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const users = require("../../models/user/user.mongo");
 const jwt = require("jsonwebtoken");
 const { queryUser, saveUser } = require("../../models/user/user.model");
 const { sendError, sendSuccess } = require("../../services/responseHandler");
@@ -7,8 +8,12 @@ require("dotenv").config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 async function httpHome(req, res) {
-  const user = req.user;
-  return sendSuccess(res, 200, user);
+  const { id } = req.user;
+  const user = await users.findById({ _id: id }).select("-password -posts");
+  if (!user) {
+    return res.status(400).json({ error: "No user found!" });
+  }
+  return res.status(200).json(user);
 }
 
 async function httpRegister(req, res) {
