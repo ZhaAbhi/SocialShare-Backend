@@ -66,14 +66,13 @@ async function httpLikePost(req, res) {
     { [option]: { likes: id } },
     { new: true }
   );
-  const updatedUser = await users.findByIdAndUpdate(
+
+  req.user = await users.findByIdAndUpdate(
     { _id: id },
     { [option]: { likes: postId } },
     { new: true }
   );
-  await updatedPost.save();
-  await updatedUser.save();
-  console.log(updatedPost);
+  return res.status(200).json(updatedPost);
 }
 
 module.exports = {
