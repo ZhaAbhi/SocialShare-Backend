@@ -4,6 +4,7 @@ const {
   httpGetAllPosts,
   httpGetPost,
   httpLikePost,
+  httpComment,
 } = require("./post.controller");
 const multer = require("multer");
 const { auth } = require("../../middlewares/auth");
@@ -22,5 +23,6 @@ postRouter.post("/post", auth, upload.single("contentImage"), httpPostContent);
 postRouter.get("/post/all", auth, httpGetAllPosts);
 postRouter.get("/post/:postId", auth, httpGetPost);
 postRouter.put("/post/like/:postId", auth, httpLikePost);
+postRouter.post("/post/comment/:postId", auth, httpComment);
 
 module.exports = postRouter;

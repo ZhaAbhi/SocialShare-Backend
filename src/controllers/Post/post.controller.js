@@ -48,7 +48,8 @@ async function httpGetPost(req, res) {
 
   const getPost = await posts
     .findById({ _id: postId })
-    .populate("postedBy", "-password -posts -__v");
+    .populate("postedBy", "-password -posts -__v")
+    .populate("comments.commentsBy", "-password -posts -likes");
   if (!getPost) {
     return res.status(400).json({ error: "Could not found post!" });
   }
@@ -75,9 +76,37 @@ async function httpLikePost(req, res) {
   return res.status(200).json(updatedPost);
 }
 
+async function httpComment(req, res) {
+  const { id } = req.user;
+  const { postId } = req.params;
+  const { commentContent } = req.body;
+  if (!commentContent) {
+    return res.status(400).json({ error: "No comment to post!" });
+  }
+  const post = await posts
+    .findByIdAndUpdate(
+      { _id: postId },
+      {
+        $addToSet: {
+          comments: [{ commentContent: commentContent, commentsBy: id }],
+        },
+      },
+      { new: true }
+    )
+    .populate("comments.commentsBy", "-password -posts -likes");
+
+  await users.findByIdAndUpdate(
+    { _id: id },
+    { $addToSet: { comments: post._id } }
+  );
+
+  return res.status(201).json(post);
+}
+
 module.exports = {
   httpPostContent,
   httpGetAllPosts,
   httpGetPost,
   httpLikePost,
+  httpComment,
 };
