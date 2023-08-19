@@ -49,7 +49,8 @@ async function httpGetPost(req, res) {
   const getPost = await posts
     .findById({ _id: postId })
     .populate("postedBy", "-password -posts -__v")
-    .populate("comments.commentsBy", "-password -posts -likes");
+    .populate("comments.commentsBy", "-password -posts -likes")
+    .populate("retweetUsers", "-password");
   if (!getPost) {
     return res.status(400).json({ error: "Could not found post!" });
   }
@@ -103,10 +104,51 @@ async function httpComment(req, res) {
   return res.status(201).json(post);
 }
 
+async function httpRetweet(req, res) {
+  const { id } = req.user;
+  const { postId } = req.params;
+  const deletedPost = await posts
+    .findOneAndDelete({
+      postedBy: id,
+      retweetData: postId,
+    })
+    .catch((error) => {
+      console.log(error);
+      res.sendStatus(400);
+    });
+
+  const option = deletedPost != null ? "$pull" : "$addToSet";
+  let repost = deletedPost;
+
+  if (repost == null) {
+    repost = await posts
+      .create({
+        postedBy: id,
+        retweetData: postId,
+      })
+      .catch((error) => {
+        console.log(error);
+        res.sendStatus(400);
+      });
+  }
+  req.user = await users.findByIdAndUpdate(
+    { _id: id },
+    { [option]: { retweets: repost._id } },
+    { new: true }
+  );
+  const updatedPost = await posts.findByIdAndUpdate(
+    { _id: postId },
+    { [option]: { retweetUsers: id } },
+    { new: true }
+  );
+  return res.status(201).json(updatedPost);
+}
+
 module.exports = {
   httpPostContent,
   httpGetAllPosts,
   httpGetPost,
   httpLikePost,
   httpComment,
+  httpRetweet,
 };

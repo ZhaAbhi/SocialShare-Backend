@@ -24,6 +24,8 @@ const postSchema = new mongoose.Schema(
         },
       },
     ],
+    retweetUsers: [{ ref: "User", type: mongoose.SchemaTypes.ObjectId }],
+    retweetData: { ref: "Post", type: mongoose.SchemaTypes.ObjectId },
   },
   { timestamps: true }
 );

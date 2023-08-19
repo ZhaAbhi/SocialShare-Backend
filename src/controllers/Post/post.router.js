@@ -5,6 +5,7 @@ const {
   httpGetPost,
   httpLikePost,
   httpComment,
+  httpRetweet,
 } = require("./post.controller");
 const multer = require("multer");
 const { auth } = require("../../middlewares/auth");
@@ -24,5 +25,5 @@ postRouter.get("/post/all", auth, httpGetAllPosts);
 postRouter.get("/post/:postId", auth, httpGetPost);
 postRouter.put("/post/like/:postId", auth, httpLikePost);
 postRouter.post("/post/comment/:postId", auth, httpComment);
-
+postRouter.post("/post/retweet/:postId", auth, httpRetweet)
 module.exports = postRouter;
