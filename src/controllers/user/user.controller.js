@@ -62,8 +62,34 @@ async function httpLogin(req, res) {
   }
 }
 
+async function httpFollowUser(req, res) {
+  const { id } = req.user;
+  const { followId } = req.params;
+  const getUser = await users.findById({ _id: followId });
+  if (!getUser) {
+    return res.status(400).json({ error: "User does not exists!" });
+  }
+  const isFollowing = getUser.followers.includes(id);
+  const option = isFollowing ? "$pull" : "$addToSet";
+
+  await users.findByIdAndUpdate(
+    { _id: id },
+    { [option]: { followings: followId } }
+  );
+  await users
+    .findByIdAndUpdate({ _id: followId }, { [option]: { followers: id } })
+    .then((results) => {
+      return res.status(201).json(results);
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(400).json({ error: "Something went wrong" });
+    });
+}
+
 module.exports = {
   httpRegister,
   httpLogin,
   httpHome,
+  httpFollowUser,
 };
