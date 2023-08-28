@@ -16,6 +16,12 @@ async function httpHome(req, res) {
   return res.status(200).json(user);
 }
 
+async function httpGetAllUser(req, res) {
+  const { id } = req.user;
+  const getAllUser = await users.find({ _id: { $ne: id } }).select("-password");
+  return res.status(200).json(getAllUser);
+}
+
 async function httpRegister(req, res) {
   const { username, email, password } = req.body;
   if (!email || !password || !username) {
@@ -90,6 +96,7 @@ async function httpFollowUser(req, res) {
 module.exports = {
   httpRegister,
   httpLogin,
+  httpGetAllUser,
   httpHome,
   httpFollowUser,
 };
