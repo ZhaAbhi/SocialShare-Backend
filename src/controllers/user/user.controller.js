@@ -93,10 +93,32 @@ async function httpFollowUser(req, res) {
     });
 }
 
+async function httpGetUserById(req, res) {
+  const { userId } = req.params;
+  const getUser = await users.findById({ _id: userId }).select("-password");
+  if (!getUser) {
+    return res.status(400).json({ error: "User does not exists!" });
+  }
+  return res.status(200).json(getUser);
+}
+
+async function httpGetUserPost(req, res) {
+  const { userId } = req.params;
+  const getUserPost = await users.findById({ _id: userId }).populate("posts");
+
+  if (!getUserPost) {
+    return res.status(400).json({ error: "No posts!" });
+  }
+
+  return res.status(200).json(getUserPost);
+}
+
 module.exports = {
   httpRegister,
   httpLogin,
   httpGetAllUser,
   httpHome,
   httpFollowUser,
+  httpGetUserById,
+  httpGetUserPost,
 };
