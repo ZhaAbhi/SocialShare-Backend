@@ -104,7 +104,13 @@ async function httpGetUserById(req, res) {
 
 async function httpGetUserPost(req, res) {
   const { userId } = req.params;
-  const getUserPost = await users.findById({ _id: userId }).populate("posts");
+  const getUserPost = await users
+    .findById({ _id: userId })
+    .select("-password")
+    .populate({
+      path: "posts",
+      populate: { path: "postedBy", select: "-password" },
+    });
 
   if (!getUserPost) {
     return res.status(400).json({ error: "No posts!" });
