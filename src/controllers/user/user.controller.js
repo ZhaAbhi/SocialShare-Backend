@@ -53,19 +53,20 @@ async function httpLogin(req, res) {
   if (!user) {
     return sendError(res, 400, "User with email does not exists!");
   }
-  const comparePasswordHash = bcrypt.compare(password, user.password);
-  if (!comparePasswordHash) {
-    return sendError(res, 400, "Password did not matched!");
-  }
-  const payload = {
-    id: user._id,
-    username: user.username,
-    email: user.email,
-  };
-  const token = jwt.sign(payload, JWT_SECRET);
-  if (token) {
-    return sendSuccess(res, 201, { accessToken: token });
-  }
+  await bcrypt.compare(password, user.password).then((result) => {
+    if (!result) {
+      return sendError(res, 400, "Password did not matched!");
+    }
+    const payload = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    };
+    const token = jwt.sign(payload, JWT_SECRET);
+    if (token) {
+      return sendSuccess(res, 201, { accessToken: token });
+    }
+  });
 }
 
 async function httpFollowUser(req, res) {
@@ -119,6 +120,21 @@ async function httpGetUserPost(req, res) {
   return res.status(200).json(getUserPost);
 }
 
+async function httpSearchUser(req, res) {
+  const { id } = req.user;
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { username: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const searchedUser = await users.find(keyword).find({ _id: { $ne: id } });
+  return res.send(searchedUser);
+}
+
 module.exports = {
   httpRegister,
   httpLogin,
@@ -127,4 +143,5 @@ module.exports = {
   httpFollowUser,
   httpGetUserById,
   httpGetUserPost,
+  httpSearchUser,
 };

@@ -7,6 +7,7 @@ const {
   httpGetAllUser,
   httpGetUserById,
   httpGetUserPost,
+  httpSearchUser,
 } = require("./user.controller");
 const { auth } = require("../../middlewares/auth");
 
@@ -19,5 +20,6 @@ userRouter.get("/users", auth, httpGetAllUser);
 userRouter.put("/follow/:followId", auth, httpFollowUser);
 userRouter.get("/user/:userId", auth, httpGetUserById);
 userRouter.get("/user/post/:userId", auth, httpGetUserPost);
+userRouter.get("/user", auth, httpSearchUser);
 
 module.exports = userRouter;
